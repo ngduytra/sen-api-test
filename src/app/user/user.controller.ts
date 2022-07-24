@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common'
 import { Auth } from 'decorators/auth.decorator'
 import { JSTGuard } from 'guards/jst.guard'
-import { RefererGuard } from 'guards/referer.gaurd'
 import { CookieGuard } from 'guards/cookie.guard'
 import { ParseAddressPipe } from 'pipelines/address.pipeline'
 import { User, NewUserDto, UpdateUserDto } from './user.dto'
@@ -41,7 +40,7 @@ export class UserController {
   }
 
   @Post()
-  @UseGuards(CookieGuard, RefererGuard)
+  @UseGuards(CookieGuard)
   updateUser(
     @Auth(ParseAddressPipe) walletAddress: string,
     @Body() user: UpdateUserDto,

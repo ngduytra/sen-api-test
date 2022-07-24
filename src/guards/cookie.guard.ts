@@ -19,7 +19,6 @@ export class CookieGuard implements CanActivate {
     const {
       cookies: { bearer },
     } = request
-    console.log('bearer', bearer)
     if (!bearer) throw new BadRequestException()
     if (!OAuth.verify(bearer)) throw new UnauthorizedException()
     const { publicKey } = OAuth.parse(bearer)
