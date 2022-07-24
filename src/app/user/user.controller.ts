@@ -3,29 +3,36 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common'
 import { Auth } from 'decorators/auth.decorator'
-import { SessionGuard } from 'guards/session.guard'
+import { JSTGuard } from 'guards/jst.guard'
+import { RefererGuard } from 'guards/referer.gaurd'
+import { CookieGuard } from 'guards/cookie.guard'
 import { ParseAddressPipe } from 'pipelines/address.pipeline'
 import { User, NewUserDto, UpdateUserDto } from './user.dto'
 import { UserService } from './user.service'
 
-@Controller('/user/:walletAddress')
+@Controller('/user')
 export class UserController {
   constructor(private readonly service: UserService) {}
 
+  @Get('/auth')
+  @UseGuards(JSTGuard)
+  authUser(@Auth(ParseAddressPipe) walletAddress: string): any {
+    return this.service.getUser(walletAddress)
+  }
+
   @Get()
-  @UseGuards(SessionGuard)
+  @UseGuards(CookieGuard)
   getUser(@Auth(ParseAddressPipe) walletAddress: string): any {
     return this.service.getUser(walletAddress)
   }
 
   @Put()
-  @UseGuards(SessionGuard)
+  @UseGuards(CookieGuard)
   newUser(
     @Auth(ParseAddressPipe) walletAddress: string,
     @Body() user: NewUserDto,
@@ -34,7 +41,7 @@ export class UserController {
   }
 
   @Post()
-  @UseGuards(SessionGuard)
+  @UseGuards(CookieGuard, RefererGuard)
   updateUser(
     @Auth(ParseAddressPipe) walletAddress: string,
     @Body() user: UpdateUserDto,
@@ -43,7 +50,7 @@ export class UserController {
   }
 
   @Delete()
-  @UseGuards(SessionGuard)
+  @UseGuards(CookieGuard)
   deleteUser(@Auth(ParseAddressPipe) walletAddress: string): any {
     return this.service.deleteUser(walletAddress)
   }
