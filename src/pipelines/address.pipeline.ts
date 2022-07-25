@@ -2,7 +2,7 @@ import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
 import { PublicKey } from '@solana/web3.js'
 
 @Injectable()
-export class ParseAddressPipe implements PipeTransform {
+export class ParseSolanaAddressPipe implements PipeTransform {
   transform(value: any) {
     try {
       if (!value) throw new Error('Empty address')
