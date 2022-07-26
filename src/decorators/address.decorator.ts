@@ -6,7 +6,7 @@ import {
 } from 'class-validator'
 
 export function IsSolanaAddress(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: any, propertyName: string) {
     registerDecorator({
       name: 'isSolanaAddress',
       target: object.constructor,

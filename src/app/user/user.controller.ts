@@ -11,7 +11,7 @@ import { Auth } from 'decorators/auth.decorator'
 import { JSTGuard } from 'guards/jst.guard'
 import { CookieGuard } from 'guards/cookie.guard'
 import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
-import { User, NewUserDto, UpdateUserDto } from './user.dto'
+import { UserDto, NewUserDto, UpdateUserDto } from './user.dto'
 import { UserService } from './user.service'
 
 @Controller('/user')
@@ -44,7 +44,7 @@ export class UserController {
   updateUser(
     @Auth(ParseSolanaAddressPipe) walletAddress: string,
     @Body() user: UpdateUserDto,
-  ): User {
+  ): UserDto {
     console.log(user)
     return this.service.updateUser({ walletAddress, ...user })
   }

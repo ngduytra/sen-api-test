@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { User } from './user.dto'
+import { UserDto } from './user.dto'
 
 @Injectable()
 export class UserService {
@@ -7,11 +7,11 @@ export class UserService {
     return { walletAddress }
   }
 
-  newUser(user: User): User {
+  newUser(user: UserDto): UserDto {
     return { ...user }
   }
 
-  updateUser(user: { walletAddress: string } & Partial<User>): any {
+  updateUser(user: { walletAddress: string } & Partial<UserDto>): any {
     return { ...user }
   }
 
