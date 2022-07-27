@@ -18,7 +18,7 @@ async function bootstrap() {
   const PORT = process.env.PORT || 3000
   const IP = ip.address()
   await app.listen(PORT)
-  console.log(
+  console.info(
     `⚡️[server]: Server is running at http://locahost:${PORT} or http://${IP}:${PORT}`,
   )
 }

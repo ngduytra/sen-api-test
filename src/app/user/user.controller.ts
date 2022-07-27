@@ -11,8 +11,9 @@ import { Auth } from 'decorators/auth.decorator'
 import { JSTGuard } from 'guards/jst.guard'
 import { CookieGuard } from 'guards/cookie.guard'
 import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
-import { UserDto, NewUserDto, UpdateUserDto } from './user.dto'
+import { NewUserDto, UpdateUserDto } from './user.dto'
 import { UserService } from './user.service'
+import { UserDocument } from 'schemas/user.schema'
 
 @Controller('/user')
 export class UserController {
@@ -20,38 +21,43 @@ export class UserController {
 
   @Get('/auth')
   @UseGuards(JSTGuard)
-  authUser(@Auth(ParseSolanaAddressPipe) walletAddress: string): any {
-    return this.service.getUser(walletAddress)
+  authUser(@Auth(ParseSolanaAddressPipe) walletAddress: string): {
+    walletAddress: string
+  } {
+    return { walletAddress }
   }
 
   @Get()
   @UseGuards(CookieGuard)
-  getUser(@Auth(ParseSolanaAddressPipe) walletAddress: string): any {
+  async getUser(
+    @Auth(ParseSolanaAddressPipe) walletAddress: string,
+  ): Promise<UserDocument> {
     return this.service.getUser(walletAddress)
   }
 
   @Put()
   @UseGuards(CookieGuard)
-  newUser(
+  async newUser(
     @Auth(ParseSolanaAddressPipe) walletAddress: string,
     @Body() user: NewUserDto,
-  ): any {
+  ): Promise<UserDocument> {
     return this.service.newUser({ walletAddress, ...user })
   }
 
   @Post()
   @UseGuards(CookieGuard)
-  updateUser(
+  async updateUser(
     @Auth(ParseSolanaAddressPipe) walletAddress: string,
     @Body() user: UpdateUserDto,
-  ): UserDto {
-    console.log(user)
+  ): Promise<UserDocument> {
     return this.service.updateUser({ walletAddress, ...user })
   }
 
   @Delete()
   @UseGuards(CookieGuard)
-  deleteUser(@Auth(ParseSolanaAddressPipe) walletAddress: string): any {
+  async deleteUser(
+    @Auth(ParseSolanaAddressPipe) walletAddress: string,
+  ): Promise<UserDocument> {
     return this.service.deleteUser(walletAddress)
   }
 }

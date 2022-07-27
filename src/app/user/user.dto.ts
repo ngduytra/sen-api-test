@@ -1,5 +1,5 @@
 import { OmitType, PartialType } from '@nestjs/mapped-types'
-import { IsString } from 'class-validator'
+import { IsOptional, IsString } from 'class-validator'
 import { IsSolanaAddress } from 'decorators/address.decorator'
 
 export class UserDto {
@@ -7,16 +7,15 @@ export class UserDto {
   walletAddress: string
 
   @IsSolanaAddress()
+  @IsOptional()
   nftAddress: string
 
   @IsSolanaAddress()
+  @IsOptional()
   snsAddress: string
 
   @IsString({ each: true })
   appIds: string[]
-
-  @IsSolanaAddress({ each: true })
-  aliasAddresses: string[]
 }
 
 export class NewUserDto extends OmitType(UserDto, ['walletAddress']) {}
