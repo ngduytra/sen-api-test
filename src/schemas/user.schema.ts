@@ -17,6 +17,9 @@ export class User {
   @Prop({ type: [{ type: String }], required: true, default: [] })
   appIds: string[]
 
+  @Prop({ type: Boolean, default: false })
+  developerMode: boolean
+
   @Prop({ type: Date })
   createdAt: Date
 
