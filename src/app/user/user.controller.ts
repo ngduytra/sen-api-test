@@ -5,6 +5,7 @@ import {
   Get,
   Post,
   Put,
+  Res,
   UseGuards,
 } from '@nestjs/common'
 import { Auth } from 'decorators/auth.decorator'
@@ -14,6 +15,7 @@ import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
 import { NewUserDto, UpdateUserDto } from './user.dto'
 import { UserService } from './user.service'
 import { UserDocument } from 'schemas/user.schema'
+import { Response } from 'express'
 
 @Controller('/user')
 export class UserController {
@@ -24,6 +26,26 @@ export class UserController {
   authUser(@Auth(ParseSolanaAddressPipe) walletAddress: string): {
     walletAddress: string
   } {
+    return { walletAddress }
+  }
+
+  @Get('/login')
+  @UseGuards(JSTGuard)
+  login(@Auth(ParseSolanaAddressPipe) walletAddress: string): {
+    walletAddress: string
+  } {
+    return { walletAddress }
+  }
+
+  @Get('/logout')
+  @UseGuards(CookieGuard)
+  logout(
+    @Auth(ParseSolanaAddressPipe) walletAddress: string,
+    @Res({ passthrough: true }) res: Response,
+  ): {
+    walletAddress: string
+  } {
+    res.clearCookie('bearer')
     return { walletAddress }
   }
 
