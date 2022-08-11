@@ -39,6 +39,8 @@ export class JSTGuard implements CanActivate {
     const { publicKey, jst } = OAuth.parse(bearer)
     request.headers.user = publicKey.toBase58()
     response.cookie('bearer', bearer, {
+      sameSite: 'none',
+      secure: true,
       httpOnly: true,
       maxAge: parseMaxAge(jst.createdDate, jst.ttl),
     })
