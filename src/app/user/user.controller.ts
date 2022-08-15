@@ -45,7 +45,12 @@ export class UserController {
   ): {
     walletAddress: string
   } {
-    res.clearCookie('bearer')
+    res.clearCookie('bearer', {
+      sameSite: 'none',
+      secure: true,
+      httpOnly: true,
+      maxAge: 0,
+    })
     return { walletAddress }
   }
 
