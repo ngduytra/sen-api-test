@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { Auth } from 'decorators/auth.decorator'
-import { JSTGuard } from 'guards/jst.guard'
+import { clearCookie, JSTGuard } from 'guards/jst.guard'
 import { CookieGuard } from 'guards/cookie.guard'
 import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
 import { NewUserDto, UpdateUserDto } from './user.dto'
@@ -45,12 +45,7 @@ export class UserController {
   ): {
     walletAddress: string
   } {
-    res.clearCookie('bearer', {
-      sameSite: 'none',
-      secure: true,
-      httpOnly: true,
-      maxAge: 0,
-    })
+    clearCookie(res)
     return { walletAddress }
   }
 

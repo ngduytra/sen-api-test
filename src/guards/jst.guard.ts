@@ -6,8 +6,21 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { OAuth } from '@sentre/connector'
-import { Request, Response } from 'express'
+import { CookieOptions, Request, Response } from 'express'
 import { Observable } from 'rxjs'
+
+const COOKIE_KEY = 'bearer'
+const COOKIE_OPTS: CookieOptions = {
+  sameSite: 'none',
+  secure: true,
+  httpOnly: true,
+}
+export const clearCookie = (res: Response) => {
+  res.clearCookie(COOKIE_KEY, {
+    ...COOKIE_OPTS,
+    maxAge: 0,
+  })
+}
 
 const BEARER_PREFIX = 'Bearer '
 const parseBearerToken = (authorization: string): string | undefined => {
@@ -38,10 +51,8 @@ export class JSTGuard implements CanActivate {
     if (!OAuth.verify(bearer)) throw new UnauthorizedException()
     const { publicKey, jst } = OAuth.parse(bearer)
     request.headers.user = publicKey.toBase58()
-    response.cookie('bearer', bearer, {
-      sameSite: 'none',
-      secure: true,
-      httpOnly: true,
+    response.cookie(COOKIE_KEY, bearer, {
+      ...COOKIE_OPTS,
       maxAge: parseMaxAge(jst.createdDate, jst.ttl),
     })
     return true
