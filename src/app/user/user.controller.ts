@@ -21,14 +21,6 @@ import { Response } from 'express'
 export class UserController {
   constructor(private readonly service: UserService) {}
 
-  @Get('/auth')
-  @UseGuards(JSTGuard)
-  authUser(@Auth(ParseSolanaAddressPipe) walletAddress: string): {
-    walletAddress: string
-  } {
-    return { walletAddress }
-  }
-
   @Get('/login')
   @UseGuards(JSTGuard)
   login(@Auth(ParseSolanaAddressPipe) walletAddress: string): {
