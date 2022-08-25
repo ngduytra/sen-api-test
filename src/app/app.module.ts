@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule'
 import { MongooseConfigService, RedisCacheConfigService } from './app.service'
 import { HealthModule } from './health/health.module'
 import { UserModule } from './user/user.module'
+import { LotteryModule } from './lottery/lottery.module'
 import configuration from 'config/configuration'
 
 @Module({
@@ -20,6 +21,7 @@ import configuration from 'config/configuration'
     ScheduleModule.forRoot(),
     HealthModule,
     UserModule,
+    LotteryModule,
   ],
   controllers: [],
   providers: [],

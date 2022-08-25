@@ -1,4 +1,5 @@
 import ip from 'ip'
+import BN from 'bn.js'
 
 const env = process.env.NODE_ENV || 'development'
 const configuration = () => ({
@@ -15,6 +16,9 @@ const configuration = () => ({
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
     ttl: env === 'development' ? 5 : 60,
+  },
+  lottery: {
+    max: new BN('1000000000000000000'),
   },
 })
 
