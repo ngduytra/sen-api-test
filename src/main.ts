@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from 'app/app.module'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
-import ip from 'ip'
+import configuration from 'config/configuration'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -15,11 +15,11 @@ async function bootstrap() {
   app.use(morgan('tiny'))
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
 
-  const PORT = process.env.PORT || 3000
-  const IP = ip.address()
+  const PORT = configuration().server.port
+  const IP = configuration().server.ip
   await app.listen(PORT)
   console.info(
-    `⚡️[server]: Server is running at http://locahost:${PORT} or http://${IP}:${PORT}`,
+    `⚡️[server]: Server is running at http://localhost:${PORT} or http://${IP}:${PORT}`,
   )
 }
 bootstrap()
