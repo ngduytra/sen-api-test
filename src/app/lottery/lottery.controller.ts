@@ -1,4 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common'
+import {
+  CacheInterceptor,
+  Controller,
+  Get,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common'
 import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
 import { LotteryService } from './lottery.service'
 
@@ -16,12 +22,14 @@ export class LotteryController {
   }
 
   @Get('/util/lottery-pubkey')
+  @UseInterceptors(CacheInterceptor)
   getLotteryPubkey() {
     const pubKey = this.service.getLotteryPubkey()
     return Buffer.from(pubKey).toString('hex')
   }
 
   @Get('/lucky-number/:ticketAddress')
+  @UseInterceptors(CacheInterceptor)
   getLuckyNumber(
     @Param('ticketAddress', ParseSolanaAddressPipe) ticketAddress,
   ) {
