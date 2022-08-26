@@ -1,12 +1,36 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, Param } from '@nestjs/common'
+import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
 import { LotteryService } from './lottery.service'
 
 @Controller('lottery')
 export class LotteryController {
   constructor(private readonly service: LotteryService) {}
 
-  @Get('/rand')
-  rand() {
-    return this.service.rand()
+  @Get('/util/gen-keypair')
+  generateKeypair() {
+    const { pubKey, privKey } = this.service.generateKeypair()
+    return {
+      pubKey: Buffer.from(pubKey).toString('hex'),
+      privKey: Buffer.from(privKey).toString('hex'),
+    }
+  }
+
+  @Get('/util/lottery-pubkey')
+  getLotteryPubkey() {
+    const pubKey = this.service.getLotteryPubkey()
+    return Buffer.from(pubKey).toString('hex')
+  }
+
+  @Get('/lucky-number/:ticketAddress')
+  getLuckyNumber(
+    @Param('ticketAddress', ParseSolanaAddressPipe) ticketAddress,
+  ) {
+    const { signature, recid, pubKey } =
+      this.service.getLuckyNumber(ticketAddress)
+    return {
+      signature: Buffer.from(signature).toString('hex'),
+      recid,
+      pubKey: Buffer.from(pubKey).toString('hex'),
+    }
   }
 }

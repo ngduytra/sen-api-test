@@ -19,6 +19,7 @@ const configuration = () => ({
   },
   lottery: {
     max: new BN('1000000000000000000'),
+    privKey: Buffer.from(process.env.LOTTERY_PRIVATE_KEY || '', 'hex'),
   },
 })
 

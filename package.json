@@ -33,7 +33,9 @@
     "@nestjs/schedule": "^2.1.0",
     "@sentre/connector": "^0.0.63",
     "@solana/web3.js": "^1.48.0",
+    "@types/secp256k1": "^4.0.3",
     "bn.js": "^5.2.1",
+    "bs58": "^5.0.0",
     "cache-manager": "^4.1.0",
     "cache-manager-redis-store": "^2.0.0",
     "class-transformer": "^0.5.1",
@@ -44,6 +46,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "secp256k1": "^4.0.3",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
