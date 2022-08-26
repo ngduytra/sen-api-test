@@ -31,6 +31,7 @@
     "@nestjs/mongoose": "^9.2.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "^2.1.0",
+    "@nestjs/swagger": "^6.0.5",
     "@sentre/connector": "^0.0.63",
     "@solana/web3.js": "^1.48.0",
     "@types/secp256k1": "^4.0.3",
