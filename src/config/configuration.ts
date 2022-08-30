@@ -17,6 +17,9 @@ const configuration = () => ({
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
     ttl: env === 'development' ? 5 : 60,
   },
+  solana: {
+    cluster: 'https://ssc-dao.genesysgo.net/',
+  },
   lottery: {
     max: new BN('1000000000000000000'),
     privKey: Buffer.from(process.env.LOTTERY_PRIVATE_KEY || '', 'hex'),

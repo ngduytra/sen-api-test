@@ -12,7 +12,6 @@ import redisStore from 'cache-manager-redis-store'
 export class MongooseConfigService implements MongooseOptionsFactory {
   @Inject(ConfigService)
   private readonly config: ConfigService
-
   public createMongooseOptions(): MongooseModuleOptions {
     return {
       uri: this.config.get('mongodb.uri', { infer: true }),

@@ -3,8 +3,10 @@ import {
   Controller,
   Get,
   Param,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
+import { CookieGuard } from 'guards/cookie.guard'
 import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
 import { LotteryService } from './lottery.service'
 
@@ -13,6 +15,7 @@ export class LotteryController {
   constructor(private readonly service: LotteryService) {}
 
   @Get('/util/gen-keypair')
+  @UseGuards(CookieGuard)
   generateKeypair() {
     const { pubKey, privKey } = this.service.generateKeypair()
     return {
@@ -22,6 +25,7 @@ export class LotteryController {
   }
 
   @Get('/util/lottery-pubkey')
+  @UseGuards(CookieGuard)
   @UseInterceptors(CacheInterceptor)
   getLotteryPubkey() {
     const pubKey = this.service.getLotteryPubkey()
@@ -29,6 +33,7 @@ export class LotteryController {
   }
 
   @Get('/lucky-number/:ticketAddress')
+  @UseGuards(CookieGuard)
   @UseInterceptors(CacheInterceptor)
   getLuckyNumber(
     @Param('ticketAddress', ParseSolanaAddressPipe) ticketAddress,
