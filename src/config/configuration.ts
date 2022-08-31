@@ -1,5 +1,6 @@
 import ip from 'ip'
 import BN from 'bn.js'
+import { PublicKey } from '@solana/web3.js'
 
 const env = process.env.NODE_ENV || 'development'
 const configuration = () => ({
@@ -18,11 +19,25 @@ const configuration = () => ({
     ttl: env === 'development' ? 5 : 60,
   },
   solana: {
-    cluster: 'https://ssc-dao.genesysgo.net/',
+    cluster:
+      env === 'development'
+        ? 'https://api.devnet.solana.com'
+        : 'https://ssc-dao.genesysgo.net/',
   },
   lottery: {
     max: new BN('1000000000000000000'),
     privKey: Buffer.from(process.env.LOTTERY_PRIVATE_KEY || '', 'hex'),
+    taxmanPubkey:
+      env === 'development'
+        ? new PublicKey('8UaZw2jDhJzv5V53569JbCd3bD4BnyCfBH3sjwgajGS9')
+        : new PublicKey('9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e'),
+    programId:
+      env === 'development'
+        ? new PublicKey('CmPmemCsdSH4CypNJEZRYEa29rhDPdQyadK71ArKmTGT')
+        : new PublicKey('CmPmemCsdSH4CypNJEZRYEa29rhDPdQyadK71ArKmTGT'),
+  },
+  jupiter: {
+    programId: new PublicKey('JUP3c2Uh3WA4Ng34tw6kPd2G4C5BB21Xo36Je1s32Ph'),
   },
 })
 

@@ -3,7 +3,12 @@ import { ConfigService } from '@nestjs/config'
 import { EnvironmentVariables } from 'config/configuration'
 import nacl from 'tweetnacl'
 import { privateKeyVerify, publicKeyCreate, ecdsaSign } from 'secp256k1'
-import { PublicKey } from '@solana/web3.js'
+import { Connection, PublicKey } from '@solana/web3.js'
+import {
+  validateInitTicketIx,
+  // validateOtcIx,
+  validatePlatformFeeIx,
+} from './lottery.util'
 
 export type Keypair = { pubKey: Uint8Array; privKey: Uint8Array }
 export type Signature = {
@@ -16,8 +21,11 @@ export type Signature = {
 export class LotteryService {
   constructor(private config: ConfigService<EnvironmentVariables>) {}
 
-  private privKey = this.config.get('lottery.privKey', { infer: true })
-  readonly pubKey = publicKeyCreate(this.privKey)
+  private readonly privKey = this.config.get('lottery.privKey', { infer: true })
+  private readonly pubKey = publicKeyCreate(this.privKey)
+  private readonly connection = new Connection(
+    this.config.get('solana.cluster', { infer: true }),
+  )
 
   generateKeypair(): Keypair {
     let privKey: Uint8Array
@@ -32,7 +40,42 @@ export class LotteryService {
     return this.pubKey
   }
 
-  getLuckyNumber(ticketAddress: string): Signature {
+  async getLuckyNumber(ticketAddress: string): Promise<Signature> {
+    const ticketPubkey = new PublicKey(ticketAddress)
+    // Inexecutable account
+    const { executable } = await this.connection.getAccountInfo(ticketPubkey)
+    if (executable) throw new Error('Invalid ticket account')
+    // Get init tx
+    const txIds = await this.connection.getSignaturesForAddress(ticketPubkey)
+    const { signature: txId } = txIds[txIds.length - 1]
+    const {
+      transaction: {
+        message: { accountKeys, instructions },
+      },
+    } = await this.connection.getParsedTransaction(txId, 'confirmed')
+    // Check ticket account is a signer
+    const index = accountKeys.findIndex(
+      ({ pubkey, signer, writable }) =>
+        pubkey.equals(ticketPubkey) && signer && writable,
+    )
+    if (index < 0) throw new Error('Invalid ticket account')
+    // Check init tikect instruction
+    // let checkedOtc = false
+    let checkedInitTicket = false
+    let checkedPlatformFee = false
+    instructions.forEach((instruction) => {
+      if ('data' in instruction && 'accounts' in instruction) {
+        // if (validateOtcIx(instruction)) checkedOtc = true
+        if (validateInitTicketIx(ticketPubkey, instruction))
+          checkedInitTicket = true
+      }
+      if ('parsed' in instruction && 'program' in instruction)
+        if (validatePlatformFeeIx(instruction)) checkedPlatformFee = true
+    })
+    // if (!checkedOtc) throw new Error('Invalid ticket account')
+    if (!checkedInitTicket) throw new Error('Invalid ticket account')
+    if (!checkedPlatformFee) throw new Error('Invalid ticket account')
+
     const msg = new PublicKey(ticketAddress).toBuffer()
     const { signature, recid } = ecdsaSign(msg, this.privKey)
     return { signature, recid, pubKey: this.pubKey }

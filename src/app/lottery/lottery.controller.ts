@@ -10,7 +10,7 @@ import { CookieGuard } from 'guards/cookie.guard'
 import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
 import { LotteryService } from './lottery.service'
 
-@Controller('lottery')
+@Controller('/lottery')
 export class LotteryController {
   constructor(private readonly service: LotteryService) {}
 
@@ -35,11 +35,12 @@ export class LotteryController {
   @Get('/lucky-number/:ticketAddress')
   @UseGuards(CookieGuard)
   @UseInterceptors(CacheInterceptor)
-  getLuckyNumber(
+  async getLuckyNumber(
     @Param('ticketAddress', ParseSolanaAddressPipe) ticketAddress,
   ) {
-    const { signature, recid, pubKey } =
-      this.service.getLuckyNumber(ticketAddress)
+    const { signature, recid, pubKey } = await this.service.getLuckyNumber(
+      ticketAddress,
+    )
     return {
       signature: Buffer.from(signature).toString('hex'),
       recid,
