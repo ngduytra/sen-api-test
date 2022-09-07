@@ -5,11 +5,7 @@ import { EnvironmentVariables } from 'config/configuration'
 import nacl from 'tweetnacl'
 import { privateKeyVerify, publicKeyCreate, ecdsaSign } from 'secp256k1'
 import { Connection, Keypair, PublicKey } from '@solana/web3.js'
-import {
-  validateInitTicketIx,
-  validateMagicEdenIx,
-  validatePlatformFeeIx,
-} from './lottery.util'
+import { validateInitTicketIx, validateMagicEdenIx } from './lottery.util'
 import LuckyWheelCore from '@sentre/lucky-wheel-core'
 
 export type Secp256k1Keypair = { pubKey: Uint8Array; privKey: Uint8Array }
@@ -86,17 +82,13 @@ export class LotteryService {
     if (index < 0) throw new Error('Invalid ticket account')
     // Check init ticket instruction
     let checkedInitTicket = false
-    let checkedPlatformFee = false
     instructions.forEach((instruction) => {
       if ('data' in instruction && 'accounts' in instruction) {
         if (validateInitTicketIx(ticketPubkey, instruction))
           checkedInitTicket = true
       }
-      if ('parsed' in instruction && 'program' in instruction)
-        if (validatePlatformFeeIx(instruction)) checkedPlatformFee = true
     })
     if (!checkedInitTicket) throw new Error('Invalid ticket account')
-    if (!checkedPlatformFee) throw new Error('Invalid ticket account')
     // Check the precedent service
     const serviceTxIds = await this.connection.getSignaturesForAddress(
       walletPubkey,
@@ -112,7 +104,6 @@ export class LotteryService {
         },
       },
     } = await this.connection.getParsedTransaction(serviceTxId, 'confirmed')
-    // Check wallet is a signer
     const serviceIndex = serviceAccountKeys.findIndex(
       ({ pubkey, signer, writable }) =>
         pubkey.equals(walletPubkey) && signer && writable,
