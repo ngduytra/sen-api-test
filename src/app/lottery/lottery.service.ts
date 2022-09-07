@@ -6,7 +6,7 @@ import { privateKeyVerify, publicKeyCreate, ecdsaSign } from 'secp256k1'
 import { Connection, PublicKey } from '@solana/web3.js'
 import {
   validateInitTicketIx,
-  // validateOtcIx,
+  validateOtcIx,
   validatePlatformFeeIx,
 } from './lottery.util'
 
@@ -59,20 +59,20 @@ export class LotteryService {
         pubkey.equals(ticketPubkey) && signer && writable,
     )
     if (index < 0) throw new Error('Invalid ticket account')
-    // Check init tikect instruction
-    // let checkedOtc = false
+    // Check init ticket instruction
+    let checkedOtc = false
     let checkedInitTicket = false
     let checkedPlatformFee = false
     instructions.forEach((instruction) => {
       if ('data' in instruction && 'accounts' in instruction) {
-        // if (validateOtcIx(instruction)) checkedOtc = true
+        if (validateOtcIx(instruction)) checkedOtc = true
         if (validateInitTicketIx(ticketPubkey, instruction))
           checkedInitTicket = true
       }
       if ('parsed' in instruction && 'program' in instruction)
         if (validatePlatformFeeIx(instruction)) checkedPlatformFee = true
     })
-    // if (!checkedOtc) throw new Error('Invalid ticket account')
+    if (!checkedOtc) throw new Error('Invalid ticket account')
     if (!checkedInitTicket) throw new Error('Invalid ticket account')
     if (!checkedPlatformFee) throw new Error('Invalid ticket account')
 
