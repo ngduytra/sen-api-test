@@ -18,8 +18,17 @@ export const validateInitTicketIx = (
   return true
 }
 
-export const validateOtcIx = ({ programId }: PartiallyDecodedInstruction) => {
-  if (!configuration().jupiter.programId.equals(programId)) return false
+export const validateMagicEdenIx = ({
+  programId,
+  accounts,
+}: PartiallyDecodedInstruction) => {
+  if (!configuration().me.programId.equals(programId)) return false
+  if (
+    accounts.findIndex((account) =>
+      account.equals(configuration().lottery.taxmanPubkey),
+    ) < 0
+  )
+    return false
   return true
 }
 

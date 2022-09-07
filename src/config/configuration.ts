@@ -36,11 +36,18 @@ const configuration = () => ({
         : new PublicKey('9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e'),
     programId:
       env === 'development'
-        ? new PublicKey('CmPmemCsdSH4CypNJEZRYEa29rhDPdQyadK71ArKmTGT')
-        : new PublicKey('CmPmemCsdSH4CypNJEZRYEa29rhDPdQyadK71ArKmTGT'),
+        ? new PublicKey('38k8ejgfKJ2VKRApCMkev1hQwqobTTZPLnX11t2dxAXA')
+        : new PublicKey('3sFeMcoZbqRJVVZpv2jvK6zfDopJ48B2vxzTBsHPoSJ7'),
+    campaignId:
+      env === 'development'
+        ? '5FRpZG9dxomxZaBuYSAjicHABoZVKEyk8ggiax79c4aV'
+        : '6o6qwGH8WzntHBg5rf64zPUQJKGr7WtGgBhhfhEwpHj8',
   },
-  jupiter: {
+  jupag: {
     programId: new PublicKey('JUP3c2Uh3WA4Ng34tw6kPd2G4C5BB21Xo36Je1s32Ph'),
+  },
+  me: {
+    programId: new PublicKey('M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K'),
   },
 })
 

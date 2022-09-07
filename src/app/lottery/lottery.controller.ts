@@ -6,6 +6,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
+import { Auth } from 'decorators/auth.decorator'
 import { CookieGuard } from 'guards/cookie.guard'
 import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
 import { LotteryService } from './lottery.service'
@@ -36,9 +37,11 @@ export class LotteryController {
   @UseGuards(CookieGuard)
   @UseInterceptors(CacheInterceptor)
   async getLuckyNumber(
+    @Auth(ParseSolanaAddressPipe) walletAddress: string,
     @Param('ticketAddress', ParseSolanaAddressPipe) ticketAddress,
   ) {
     const { signature, recid, pubKey } = await this.service.getLuckyNumber(
+      walletAddress,
       ticketAddress,
     )
     return {
