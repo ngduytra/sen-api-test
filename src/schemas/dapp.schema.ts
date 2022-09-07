@@ -45,8 +45,6 @@ export class Dapp {
 }
 
 export const DappSchema = SchemaFactory.createForClass(Dapp).index({
-  appId: 1,
-  url: 1,
   name: 'text',
   description: 'text',
   tags: 'text',

@@ -19,6 +19,7 @@ export class DappService {
 
   async getDapps(search: string, offset = MIN_OFFSET, limit = MAX_LIMIT) {
     const filter = search ? { $text: { $search: search } } : {}
+    console.log(filter)
     const dapps = await this.dappModel
       .find(filter, this.dbProjection)
       .sort({ createdAt: -1 })

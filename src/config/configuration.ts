@@ -13,8 +13,8 @@ const configuration = () => ({
     ],
   },
   mongodb: {
-    uri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/sen_data',
-    projection: { _id: 0, __v: 0, createdAt: 0, updatedAt: 0 },
+    uri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/sen_api',
+    projection: { _id: 0, __v: 0 },
   },
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
