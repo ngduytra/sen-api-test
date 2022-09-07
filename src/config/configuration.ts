@@ -8,6 +8,9 @@ const configuration = () => ({
     env,
     port: parseInt(process.env.PORT, 10) || 10000,
     ip: ip.address() as string,
+    adminPubkeys: [
+      new PublicKey('8W6QginLcAydYyMYjxuyKQN56NzeakDE3aRFrAmocS6D'),
+    ],
   },
   mongodb: {
     uri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/sen_data',

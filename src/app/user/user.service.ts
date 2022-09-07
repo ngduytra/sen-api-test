@@ -8,28 +8,25 @@ import { UserDto } from './user.dto'
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async getUser(walletAddress: string): Promise<UserDocument> {
+  async getUser(walletAddress: string) {
     const user = await this.userModel.findOne({ walletAddress })
     return user
   }
 
-  async newUser(user: UserDto): Promise<UserDocument> {
+  async newUser(user: UserDto) {
     const newUser = await new this.userModel({ ...user }).save()
     return newUser
   }
 
-  async updateUser(
-    user: { walletAddress: string } & Partial<UserDto>,
-  ): Promise<UserDocument> {
-    const updatedUser = await this.userModel.findOneAndUpdate(
+  async updateUser(user: { walletAddress: string } & Partial<UserDto>) {
+    return await this.userModel.findOneAndUpdate(
       { walletAddress: user.walletAddress },
       { ...user },
       { new: true, upsert: true },
     )
-    return updatedUser
   }
 
-  async deleteUser(walletAddress: string): Promise<UserDocument> {
+  async deleteUser(walletAddress: string) {
     const deletedUser = await this.userModel.findOneAndDelete({ walletAddress })
     return deletedUser
   }
