@@ -32,6 +32,9 @@ export class LotteryService {
     ),
     this.config.get('lottery.programId', { infer: true }),
   )
+  private readonly campaignPubKey = this.config.get('lottery.campaignId', {
+    infer: true,
+  })
 
   private signLuckyTicket(msg: Buffer) {
     const { signature, recid } = ecdsaSign(msg, this.privKey)
@@ -74,12 +77,23 @@ export class LotteryService {
         message: { accountKeys, instructions },
       },
     } = await this.connection.getParsedTransaction(txId, 'confirmed')
+    // Check wallet is a signer
+    const walletIndex = accountKeys.findIndex(
+      ({ pubkey, signer, writable }) =>
+        pubkey.equals(walletPubkey) && signer && writable,
+    )
+    if (walletIndex < 0) throw new Error('Invalid ticket account')
     // Check ticket account is a signer
-    const index = accountKeys.findIndex(
+    const ticketIndex = accountKeys.findIndex(
       ({ pubkey, signer, writable }) =>
         pubkey.equals(ticketPubkey) && signer && writable,
     )
-    if (index < 0) throw new Error('Invalid ticket account')
+    if (ticketIndex < 0) throw new Error('Invalid ticket account')
+    // Check campaign
+    const campaignIndex = accountKeys.findIndex(
+      ({ pubkey, writable }) => pubkey.equals(this.campaignPubKey) && writable,
+    )
+    if (campaignIndex < 0) throw new Error('Invalid ticket account')
     // Check init ticket instruction
     let checkedInitTicket = false
     instructions.forEach((instruction) => {
@@ -89,7 +103,7 @@ export class LotteryService {
       }
     })
     if (!checkedInitTicket) throw new Error('Invalid ticket account')
-    // Check the precedent service
+    // Get the precedent service
     const serviceTxIds = await this.connection.getSignaturesForAddress(
       walletPubkey,
       { before: txId, limit: 1 },
@@ -104,11 +118,13 @@ export class LotteryService {
         },
       },
     } = await this.connection.getParsedTransaction(serviceTxId, 'confirmed')
+    // Check wallet is a signer
     const serviceIndex = serviceAccountKeys.findIndex(
       ({ pubkey, signer, writable }) =>
         pubkey.equals(walletPubkey) && signer && writable,
     )
     if (serviceIndex < 0) throw new Error('Invalid ticket account')
+    // Check Magic Eden instruction
     let checkedMagicEden = false
     serviceInstructions.forEach((instruction) => {
       if ('data' in instruction && 'accounts' in instruction) {

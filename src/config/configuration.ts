@@ -22,26 +22,14 @@ const configuration = () => ({
     ttl: env === 'development' ? 5 : 60,
   },
   solana: {
-    cluster:
-      env === 'development'
-        ? 'https://api.devnet.solana.com'
-        : 'https://ssc-dao.genesysgo.net/',
+    cluster: 'https://ssc-dao.genesysgo.net/',
   },
   lottery: {
     max: new BN('1000000000000000000'),
     privKey: Buffer.from(process.env.LOTTERY_PRIVATE_KEY || '', 'hex'),
-    taxmanPubkey:
-      env === 'development'
-        ? new PublicKey('8UaZw2jDhJzv5V53569JbCd3bD4BnyCfBH3sjwgajGS9')
-        : new PublicKey('9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e'),
-    programId:
-      env === 'development'
-        ? new PublicKey('38k8ejgfKJ2VKRApCMkev1hQwqobTTZPLnX11t2dxAXA')
-        : new PublicKey('3sFeMcoZbqRJVVZpv2jvK6zfDopJ48B2vxzTBsHPoSJ7'),
-    campaignId:
-      env === 'development'
-        ? '5FRpZG9dxomxZaBuYSAjicHABoZVKEyk8ggiax79c4aV'
-        : '6o6qwGH8WzntHBg5rf64zPUQJKGr7WtGgBhhfhEwpHj8',
+    taxmanPubkey: new PublicKey('9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e'),
+    programId: new PublicKey('3sFeMcoZbqRJVVZpv2jvK6zfDopJ48B2vxzTBsHPoSJ7'),
+    campaignId: new PublicKey('6o6qwGH8WzntHBg5rf64zPUQJKGr7WtGgBhhfhEwpHj8'),
   },
   jupag: {
     programId: new PublicKey('JUP3c2Uh3WA4Ng34tw6kPd2G4C5BB21Xo36Je1s32Ph'),
