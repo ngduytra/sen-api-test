@@ -6,7 +6,7 @@ import nacl from 'tweetnacl'
 import { privateKeyVerify, publicKeyCreate, ecdsaSign } from 'secp256k1'
 import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import {
-  isInitTicketIx,
+  // isInitTicketIx,
   isSigner,
   isWritable,
   validateInitTicketIx,
@@ -121,8 +121,8 @@ export class LotteryService {
       // Check Magic Eden instruction
       for (const instruction of serviceInstructions) {
         if ('data' in instruction && 'accounts' in instruction) {
-          if (isInitTicketIx(instruction))
-            throw new Error('Invalid ticket account')
+          // if (isInitTicketIx(instruction))
+          //   throw new Error('Invalid ticket account')
           if (
             validateMagicEdenIx(instruction) &&
             isSigner(walletPubkey, serviceAccountKeys) &&
