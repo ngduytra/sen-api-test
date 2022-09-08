@@ -25,6 +25,7 @@ const configuration = () => ({
     cluster: 'https://ssc-dao.genesysgo.net/',
   },
   lottery: {
+    tolerance: 5,
     max: new BN('1000000000000000000'),
     privKey: Buffer.from(process.env.LOTTERY_PRIVATE_KEY || '', 'hex'),
     taxmanPubkey: new PublicKey('9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e'),

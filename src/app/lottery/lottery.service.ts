@@ -5,7 +5,13 @@ import { EnvironmentVariables } from 'config/configuration'
 import nacl from 'tweetnacl'
 import { privateKeyVerify, publicKeyCreate, ecdsaSign } from 'secp256k1'
 import { Connection, Keypair, PublicKey } from '@solana/web3.js'
-import { validateInitTicketIx, validateMagicEdenIx } from './lottery.util'
+import {
+  isInitTicketIx,
+  isSigner,
+  isWritable,
+  validateInitTicketIx,
+  validateMagicEdenIx,
+} from './lottery.util'
 import LuckyWheelCore from '@sentre/lucky-wheel-core'
 
 export type Secp256k1Keypair = { pubKey: Uint8Array; privKey: Uint8Array }
@@ -33,6 +39,9 @@ export class LotteryService {
     this.config.get('lottery.programId', { infer: true }),
   )
   private readonly campaignPubKey = this.config.get('lottery.campaignId', {
+    infer: true,
+  })
+  private readonly tolerance = this.config.get('lottery.tolerance', {
     infer: true,
   })
 
@@ -77,62 +86,54 @@ export class LotteryService {
         message: { accountKeys, instructions },
       },
     } = await this.connection.getParsedTransaction(txId, 'confirmed')
-    // Check wallet is a signer
-    const walletIndex = accountKeys.findIndex(
-      ({ pubkey, signer, writable }) =>
-        pubkey.equals(walletPubkey) && signer && writable,
-    )
-    if (walletIndex < 0) throw new Error('Invalid ticket account')
-    // Check ticket account is a signer
-    const ticketIndex = accountKeys.findIndex(
-      ({ pubkey, signer, writable }) =>
-        pubkey.equals(ticketPubkey) && signer && writable,
-    )
-    if (ticketIndex < 0) throw new Error('Invalid ticket account')
-    // Check campaign
-    const campaignIndex = accountKeys.findIndex(
-      ({ pubkey, writable }) => pubkey.equals(this.campaignPubKey) && writable,
-    )
-    if (campaignIndex < 0) throw new Error('Invalid ticket account')
     // Check init ticket instruction
     let checkedInitTicket = false
-    instructions.forEach((instruction) => {
+    for (const instruction of instructions) {
       if ('data' in instruction && 'accounts' in instruction) {
-        if (validateInitTicketIx(ticketPubkey, instruction))
+        if (validateInitTicketIx(ticketPubkey, instruction)) {
+          if (
+            !isSigner(walletPubkey, accountKeys) ||
+            !isWritable(walletPubkey, accountKeys) ||
+            !isSigner(ticketPubkey, accountKeys) ||
+            !isWritable(ticketPubkey, accountKeys) ||
+            !isWritable(this.campaignPubKey, accountKeys)
+          )
+            throw new Error('Invalid ticket account')
           checkedInitTicket = true
+        }
       }
-    })
+    }
     if (!checkedInitTicket) throw new Error('Invalid ticket account')
     // Get the precedent service
     const serviceTxIds = await this.connection.getSignaturesForAddress(
       walletPubkey,
-      { before: txId, limit: 1 },
+      { before: txId, limit: this.tolerance },
     )
-    const { signature: serviceTxId } = serviceTxIds[0] || {}
-    if (!serviceTxId) throw new Error('Invalid ticket account')
-    const {
-      transaction: {
-        message: {
-          accountKeys: serviceAccountKeys,
-          instructions: serviceInstructions,
+    for (const { signature: serviceTxId } of serviceTxIds) {
+      const {
+        transaction: {
+          message: {
+            accountKeys: serviceAccountKeys,
+            instructions: serviceInstructions,
+          },
         },
-      },
-    } = await this.connection.getParsedTransaction(serviceTxId, 'confirmed')
-    // Check wallet is a signer
-    const serviceIndex = serviceAccountKeys.findIndex(
-      ({ pubkey, signer, writable }) =>
-        pubkey.equals(walletPubkey) && signer && writable,
-    )
-    if (serviceIndex < 0) throw new Error('Invalid ticket account')
-    // Check Magic Eden instruction
-    let checkedMagicEden = false
-    serviceInstructions.forEach((instruction) => {
-      if ('data' in instruction && 'accounts' in instruction) {
-        if (validateMagicEdenIx(instruction)) checkedMagicEden = true
+      } = await this.connection.getParsedTransaction(serviceTxId, 'confirmed')
+      // Check Magic Eden instruction
+      for (const instruction of serviceInstructions) {
+        if ('data' in instruction && 'accounts' in instruction) {
+          if (isInitTicketIx(instruction))
+            throw new Error('Invalid ticket account')
+          if (
+            validateMagicEdenIx(instruction) &&
+            isSigner(walletPubkey, serviceAccountKeys) &&
+            isWritable(walletPubkey, serviceAccountKeys)
+          ) {
+            return this.signLuckyTicket(msg)
+          }
+        }
       }
-    })
-    if (!checkedMagicEden) throw new Error('Invalid ticket account')
+    }
 
-    return this.signLuckyTicket(msg)
+    throw new Error('Invalid ticket account')
   }
 }
