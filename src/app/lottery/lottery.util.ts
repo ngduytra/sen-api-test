@@ -1,4 +1,5 @@
 import {
+  Keypair,
   ParsedInstruction,
   ParsedMessageAccount,
   PartiallyDecodedInstruction,
@@ -7,6 +8,8 @@ import {
 } from '@solana/web3.js'
 import configuration from 'config/configuration'
 import { ixDiscriminator } from 'helpers/util'
+import { hash } from 'tweetnacl'
+import xor from 'buffer-xor'
 
 export const isSigner = (
   account: PublicKey,
@@ -26,6 +29,19 @@ export const isWritable = (
     ({ pubkey, writable }) => pubkey.equals(account) && writable,
   )
   return index >= 0
+}
+
+export const isDeterministicTicket = (
+  ticketPubkey: PublicKey,
+  seed: Buffer,
+) => {
+  const keypair = Keypair.fromSeed(
+    xor(
+      Buffer.from(hash(seed).slice(0, 32)),
+      Buffer.from(hash(seed).slice(32, 64)),
+    ),
+  )
+  return keypair.publicKey.equals(ticketPubkey)
 }
 
 export const isInitTicketIx = ({

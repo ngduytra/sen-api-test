@@ -6,7 +6,7 @@ import nacl from 'tweetnacl'
 import { privateKeyVerify, publicKeyCreate, ecdsaSign } from 'secp256k1'
 import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import {
-  // isInitTicketIx,
+  isDeterministicTicket,
   isSigner,
   isWritable,
   validateInitTicketIx,
@@ -92,8 +92,8 @@ export class LotteryService {
       if ('data' in instruction && 'accounts' in instruction) {
         if (validateInitTicketIx(ticketPubkey, instruction)) {
           if (
-            !isSigner(walletPubkey, accountKeys) ||
-            !isWritable(walletPubkey, accountKeys) ||
+            // !isSigner(walletPubkey, accountKeys) ||
+            // !isWritable(walletPubkey, accountKeys) ||
             !isSigner(ticketPubkey, accountKeys) ||
             !isWritable(ticketPubkey, accountKeys) ||
             !isWritable(this.campaignPubKey, accountKeys)
@@ -118,15 +118,18 @@ export class LotteryService {
           },
         },
       } = await this.connection.getParsedTransaction(serviceTxId, 'confirmed')
+      const { transaction } = await this.connection.getConfirmedTransaction(
+        serviceTxId,
+      )
+      const seed = transaction.serializeMessage()
       // Check Magic Eden instruction
       for (const instruction of serviceInstructions) {
         if ('data' in instruction && 'accounts' in instruction) {
-          // if (isInitTicketIx(instruction))
-          //   throw new Error('Invalid ticket account')
           if (
             validateMagicEdenIx(instruction) &&
             isSigner(walletPubkey, serviceAccountKeys) &&
-            isWritable(walletPubkey, serviceAccountKeys)
+            isWritable(walletPubkey, serviceAccountKeys) &&
+            isDeterministicTicket(ticketPubkey, seed)
           ) {
             return this.signLuckyTicket(msg)
           }
