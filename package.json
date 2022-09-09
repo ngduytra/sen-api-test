@@ -36,6 +36,7 @@
     "@sentre/connector": "^0.1.0",
     "@sentre/lucky-wheel-core": "^0.4.2",
     "@solana/web3.js": "^1.48.0",
+    "axios": "^0.27.2",
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
     "buffer-xor": "^2.0.2",

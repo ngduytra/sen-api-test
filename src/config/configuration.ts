@@ -38,6 +38,9 @@ const configuration = () => ({
   me: {
     programId: new PublicKey('M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K'),
   },
+  twitter: {
+    token: process.env.TWITTER_BEARER_TOKEN || '',
+  },
 })
 
 export type EnvironmentVariables = ReturnType<typeof configuration>
