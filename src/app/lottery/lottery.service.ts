@@ -92,8 +92,8 @@ export class LotteryService {
       if ('data' in instruction && 'accounts' in instruction) {
         if (validateInitTicketIx(ticketPubkey, instruction)) {
           if (
-            // !isSigner(walletPubkey, accountKeys) ||
-            // !isWritable(walletPubkey, accountKeys) ||
+            !isSigner(walletPubkey, accountKeys) ||
+            !isWritable(walletPubkey, accountKeys) ||
             !isSigner(ticketPubkey, accountKeys) ||
             !isWritable(ticketPubkey, accountKeys) ||
             !isWritable(this.campaignPubKey, accountKeys)
