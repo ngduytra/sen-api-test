@@ -1,5 +1,6 @@
 import {
   Body,
+  CacheInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,6 +9,7 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common'
 import { Auth } from 'decorators/auth.decorator'
 import { AdminGuard } from 'guards/admin.guard'
@@ -24,6 +26,7 @@ export class DappController {
   constructor(private readonly service: DappService) {}
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   async getDapps(
     @Query('offset', ParseOffsetPipe) offset: number,
     @Query('limit', ParseLimitPipe) limit: number,
@@ -33,6 +36,7 @@ export class DappController {
   }
 
   @Get('/:appId')
+  @UseInterceptors(CacheInterceptor)
   async getCollection(@Param('appId') appId: string) {
     if (!appId) throw new Error('Invalid app ID')
     return await this.service.getDapp(appId)
