@@ -19,7 +19,7 @@ const configuration = () => ({
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
-    ttl: env === 'development' ? 5 : 60,
+    ttl: env === 'development' ? 5 : 30,
   },
   solana: {
     cluster: 'https://ssc-dao.genesysgo.net/',
