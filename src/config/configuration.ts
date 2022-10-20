@@ -10,6 +10,8 @@ const configuration = () => ({
     ip: ip.address() as string,
     adminPubkeys: [
       new PublicKey('8W6QginLcAydYyMYjxuyKQN56NzeakDE3aRFrAmocS6D'),
+      new PublicKey('pkGvE888eDrat79x46p2EmNNYspUsgvLKL9ynU9qSNW'),
+      new PublicKey('2Mdbxjidw1oHPwkSsFqfaFcYHjLUrNdkVt98Xc1K5dac'),
     ],
   },
   mongodb: {

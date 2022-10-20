@@ -8,6 +8,8 @@ import { UserModule } from './user/user.module'
 import { LotteryModule } from './lottery/lottery.module'
 import { DappModule } from './dapp/dapp.module'
 import { TwitterModule } from './twitter/twitter.module'
+import { NotificationModule } from './notification/notification.module'
+import { UserNotificationModule } from './user-notification/user-notification.module'
 import configuration from 'config/configuration'
 
 @Module({
@@ -26,6 +28,8 @@ import configuration from 'config/configuration'
     LotteryModule,
     DappModule,
     TwitterModule,
+    NotificationModule,
+    UserNotificationModule,
   ],
   controllers: [],
   providers: [],

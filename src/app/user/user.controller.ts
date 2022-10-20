@@ -8,6 +8,8 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common'
+import { Response } from 'express'
+
 import { Auth } from 'decorators/auth.decorator'
 import { clearCookie, JSTGuard } from 'guards/jst.guard'
 import { CookieGuard } from 'guards/cookie.guard'
@@ -15,11 +17,10 @@ import { ParseSolanaAddressPipe } from 'pipelines/address.pipeline'
 import { NewUserDto, UpdateUserDto } from './user.dto'
 import { UserService } from './user.service'
 import { UserDocument } from 'schemas/user.schema'
-import { Response } from 'express'
 
 @Controller('/user')
 export class UserController {
-  constructor(private readonly service: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get('/login')
   @UseGuards(JSTGuard)
@@ -46,7 +47,7 @@ export class UserController {
   async getUser(
     @Auth(ParseSolanaAddressPipe) walletAddress: string,
   ): Promise<UserDocument> {
-    return this.service.getUser(walletAddress)
+    return this.userService.getUser(walletAddress)
   }
 
   @Put()
@@ -55,7 +56,7 @@ export class UserController {
     @Auth(ParseSolanaAddressPipe) walletAddress: string,
     @Body() user: NewUserDto,
   ): Promise<UserDocument> {
-    return this.service.newUser({ walletAddress, ...user })
+    return this.userService.newUser({ walletAddress, ...user })
   }
 
   @Post()
@@ -64,7 +65,7 @@ export class UserController {
     @Auth(ParseSolanaAddressPipe) walletAddress: string,
     @Body() user: UpdateUserDto,
   ): Promise<UserDocument> {
-    return this.service.updateUser({ walletAddress, ...user })
+    return this.userService.updateUser({ walletAddress, ...user })
   }
 
   @Delete()
@@ -72,6 +73,6 @@ export class UserController {
   async deleteUser(
     @Auth(ParseSolanaAddressPipe) walletAddress: string,
   ): Promise<UserDocument> {
-    return this.service.deleteUser(walletAddress)
+    return this.userService.deleteUser(walletAddress)
   }
 }
